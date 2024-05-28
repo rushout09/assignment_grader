@@ -35,7 +35,7 @@ def png_to_base64(image_path):
     with open(image_path, "rb") as img_file:
         image_bytes = img_file.read()
         base64_encoded = base64.b64encode(image_bytes).decode('utf-8')
-    return base64_encoded
+    return f"data:image/png;base64,{base64_encoded}"
 
 
 def convert_to_base_64(file_url: str):
@@ -63,31 +63,31 @@ openai_messages = [
 ]
 
 
-def qa_bot(message, history, extra):
-    if extra is not None and is_url(extra):
+def qa_bot(message, history):
+    files = message.get('files', [])
+    text_message = message.get('text')
+    for file in files:
         openai_messages.append({"role": "user",
-                                "content": [{"type": "text",
-                                             "text": message},
+                                "content": [
                                             {
                                                 "type": "image_url",
                                                 "image_url": {
-                                                    "url": extra,
-                                                    "detail": "high"
+                                                    "url": png_to_base64(file),
                                                 },
                                             }
                                             ]
                                 })
-    else:
-        openai_messages.append({"role": "user", "content": message})
+    if text_message != '':
+        openai_messages.append({"role": "user", "content": text_message})
 
     response = client.chat.completions.create(
         model='gpt-4o',
         messages=openai_messages,
-        max_tokens=300,
+        max_tokens=500,
         temperature=0.5,
     )
 
     return response.choices[0].message.content
 
 
-gr.ChatInterface(qa_bot, additional_inputs="text", additional_inputs_accordion="image_url").launch(share=True)
+gr.ChatInterface(qa_bot, multimodal=True).launch(share=True)
