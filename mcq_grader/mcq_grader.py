@@ -81,7 +81,7 @@ def qa_bot(message, history):
         "role": "user"
     })
     response = client.chat.completions.create(
-            model='gpt-3.5-turbo',
+            model='gpt-4o',
             messages=openai_messages,
             max_tokens=300,
             temperature=0.5,
