@@ -52,7 +52,8 @@ def convert_to_base_64(file_url: str):
 openai_messages = [
     {
         'role': 'system',
-        'content': 'You grade assignments. Grade the assignment out of 10. each question contains 5 marks'
+        'content': 'You grade assignments. Grade the assignment out of 10. each question contains 5 marks. '
+                   'In the end format the grading as: Name: {student name}, Roll Number {student roll number}, Grade {student grade}'
     },
     # {
     #     'role': 'user',
